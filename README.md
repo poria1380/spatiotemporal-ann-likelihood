@@ -854,17 +854,17 @@ table7 = table7.round(4)
 table7
 
 # =========================
-# Chapter 4: Meteorological Data Analysis and Forecasting
+# Chapter 5: Meteorological Data Analysis and Forecasting
 # =========================
 
 # -------------------------
-# Section 4.1: Install required packages with specific versions
+# Section 5.1: Install required packages with specific versions
 # -------------------------
 !pip uninstall -y meteostat numpy pandas
 !pip install numpy==1.26.4 pandas==2.2.2 meteostat==1.6.7
 
 # -------------------------
-# Section 4.2: Fetch hourly weather data for Mashhad
+# Section 5.2: Fetch hourly weather data for Mashhad
 # -------------------------
 from meteostat import Point, Stations, Hourly
 from datetime import datetime
@@ -897,7 +897,7 @@ data_mashhad["temp"].plot(title="Hourly Temperature - Mashhad")
 plt.show()
 
 # -------------------------
-# Section 4.3: Daily temperature data for multiple cities
+# Section 5.3: Daily temperature data for multiple cities
 # -------------------------
 from meteostat import Stations, Hourly
 from datetime import datetime
@@ -937,7 +937,7 @@ print("\nنمونه داده‌های ترکیب شده:")
 print(df.head())
 
 # -------------------------
-# Section 4.4: Compute spatial weight matrix
+# Section 5.4: Compute spatial weight matrix
 # -------------------------
 import numpy as np
 
@@ -975,7 +975,7 @@ print("ماتریس وزن نرمال شده W:\n", W_normalized)
 !pip uninstall -y meteostat numpy pandas
 !pip install numpy==1.26.4 pandas==2.2.2 meteostat==1.6.7
 # -------------------------
-# Section 4.5: Plot meteorological stations on map
+# Section 5.5: Plot meteorological stations on map
 # -------------------------
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -999,7 +999,7 @@ plt.title("Meteorological Stations in Iran", fontsize=16)
 plt.show()
 
 # -------------------------
-# Section 4.6: Spatial-temporal regression and ANN modeling
+# Section 5.6: Spatial-temporal regression and ANN modeling
 # -------------------------
 import pandas as pd
 import numpy as np
@@ -1034,7 +1034,7 @@ model1 = OLS(Y, X1).fit()
 print(model1.summary()))
 
 # -------------------------
-# Section 4.7: Model 2 - Add geographic coordinates
+# Section 5.7: Model 2 - Add geographic coordinates
 # -------------------------
 X2 = np.column_stack([y_lag, Wy_lag, lon, lat])
 X2 = add_constant(X2)
@@ -1042,7 +1042,7 @@ model2 = OLS(Y, X2).fit()
 print(model2.summary())
 
 # -------------------------
-# Section 4.8: Model 3 - Include city dummy variables
+# Section 5.8: Model 3 - Include city dummy variables
 # -------------------------
 dummies = pd.get_dummies(city_index).values
 X3 = np.column_stack([y_lag, Wy_lag, dummies])
@@ -1051,7 +1051,7 @@ model3 = OLS(Y, X3).fit()
 print(model3.summary())
 
 # -------------------------
-# Section 4.9: Model 4 - Interactive model with coordinates
+# Section 5.9: Model 4 - Interactive model with coordinates
 # -------------------------
 X4 = np.column_stack([
     y_lag, Wy_lag, lon, lat,
@@ -1062,7 +1062,7 @@ model4 = OLS(Y, X4).fit()
 print(model4.summary())
 
 # -------------------------
-# Section 4.10: Model 5 - Artificial Neural Network (ANN)
+# Section 5.10: Model 5 - Artificial Neural Network (ANN)
 # -------------------------
 X5 = np.column_stack([y_lag, Wy_lag, lon, lat])
 Y5 = Y
@@ -1083,7 +1083,7 @@ ann.fit(X_train, Y_train, epochs=50, batch_size=32, verbose=0)
 Y_pred_ann = ann.predict(X5).flatten()
 
 # -------------------------
-# Section 4.11: Model summary and RMSE comparison
+# Section 5.11: Model summary and RMSE comparison
 # -------------------------
 def model_summary(name, model, X, Y):
     pred = model.predict(X)
@@ -1105,7 +1105,7 @@ results_df = pd.DataFrame(results, columns=["Model", "RMSE", "AIC", "BIC"])
 print(results_df)
 
 # -------------------------
-# Section 4.12: Compute residuals for models
+# Section 5.12: Compute residuals for models
 # -------------------------
 import matplotlib.pyplot as plt
 from statsmodels.tsa.stattools import acf
@@ -1142,7 +1142,7 @@ plt.axhline(0, color='k', linestyle='--')
 plt.show()
 
 # -------------------------
-# Section 4.13: Residual autocorrelation (ACF)
+# Section 5.13: Residual autocorrelation (ACF)
 # -------------------------
 acf1_vals = []
 acf2_vals = []
@@ -1173,7 +1173,7 @@ plt.title("Residual ACF(2) per station")
 plt.show()
 
 # -------------------------
-# Section 4.14: Marginal Effects (Effect of y(t-1))
+# Section 5.14: Marginal Effects (Effect of y(t-1))
 # -------------------------
 cityA, cityB = "Mashhad", "Bojnord"
 
@@ -1198,7 +1198,7 @@ plt.legend()
 plt.show()
 
 # -------------------------
-# Section 4.15: Geographic Effects on temperature
+# Section 5.15: Geographic Effects on temperature
 # -------------------------
 quartiles = np.quantile(Y, [0.25, 0.5, 0.75])
 effects = {q: [] for q in quartiles}
@@ -1223,7 +1223,7 @@ plt.legend()
 plt.show()
 
 # -------------------------
-# Section 4.16: Forecasting next 3 days
+# Section 5.16: Forecasting next 3 days
 # -------------------------
 import numpy as np
 import pandas as pd
