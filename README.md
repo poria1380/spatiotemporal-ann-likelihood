@@ -1064,23 +1064,47 @@ print(model4.summary())
 # -------------------------
 # Section 5.10: Model 5 - Artificial Neural Network (ANN)
 # -------------------------
-X5 = np.column_stack([y_lag, Wy_lag, lon, lat])
+from sklearn.preprocessing import StandardScaler
+from tensorflow.keras.callbacks import EarlyStopping
+
+# Standardize the features for ANN
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(np.column_stack([y_lag, Wy_lag, lon, lat]))  # Standardizing all features for ANN
+
 Y5 = Y
-X5 = np.nan_to_num(X5)
+X_scaled = np.nan_to_num(X_scaled)
 Y5 = np.nan_to_num(Y5)
 
-split = int(len(X5) * 0.8)
-X_train, X_test = X5[:split], X5[split:]
+# Split the data into train/test sets
+split = int(len(X_scaled) * 0.8)
+X_train, X_test = X_scaled[:split], X_scaled[split:]
 Y_train, Y_test = Y5[:split], Y5[split:]
 
+# Define the ANN model with one hidden layer
 ann = models.Sequential([
-    layers.Dense(8, activation="sigmoid", input_shape=(X5.shape[1],)),
+    layers.Dense(8, activation="relu", input_shape=(X_train.shape[1],)),  # Use ReLU instead of Sigmoid for hidden layers
     layers.Dense(1, activation="linear")
 ])
-ann.compile(optimizer="adam", loss="mse")
-ann.fit(X_train, Y_train, epochs=50, batch_size=32, verbose=0)
 
-Y_pred_ann = ann.predict(X5).flatten()
+# Compile and train the model with EarlyStopping to prevent overfitting
+early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+
+ann.compile(optimizer="adam", loss="mse")
+ann.fit(X_train, Y_train, epochs=200, batch_size=32, verbose=0, validation_split=0.2, callbacks=[early_stopping])
+
+# Predict using the ANN model
+Y_pred_ann = ann.predict(X_test).flatten()
+
+# Compute RMSE for the ANN model
+rmse_ann = np.sqrt(mean_squared_error(Y_test, Y_pred_ann))
+# predict test
+Y_pred_ann_test = ann.predict(X_test).flatten()
+
+# predict all data
+Y_pred_ann = ann.predict(X_scaled).flatten()
+
+# RMSE
+rmse_ann = np.sqrt(mean_squared_error(Y_test, Y_pred_ann_test))
 
 # -------------------------
 # Section 5.11: Model summary and RMSE comparison
@@ -1098,9 +1122,10 @@ results.append(model_summary("Model 2", model2, X2, Y))
 results.append(model_summary("Model 3", model3, X3, Y))
 results.append(model_summary("Model 4", model4, X4, Y))
 
-rmse_ann = np.sqrt(mean_squared_error(Y5, Y_pred_ann))
+# Add the ANN model's RMSE to the results
 results.append(["Model 5 (ANN)", rmse_ann, np.nan, np.nan])
 
+# Print the comparison table
 results_df = pd.DataFrame(results, columns=["Model", "RMSE", "AIC", "BIC"])
 print(results_df)
 
